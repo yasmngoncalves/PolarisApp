@@ -1,0 +1,314 @@
+
+{
+  "entities": {
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Represents a user's profile information.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the UserProfile entity."
+        },
+        "username": {
+          "type": "string",
+          "description": "User's chosen username."
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address.",
+          "format": "email"
+        },
+        "profileName": {
+          "type": "string",
+          "description": "User's public facing name to be displayed in the application."
+        },
+        "waterGoal": {
+          "type": "number",
+          "description": "User's daily water intake goal in milliliters."
+        },
+        "sleepGoal": {
+          "type": "number",
+          "description": "User's daily sleep goal in hours."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the user profile was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the user profile was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "username",
+        "email",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "MoodLog": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "MoodLog",
+      "type": "object",
+      "description": "Represents a user's mood log entry.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the MoodLog entity, typically the date string 'yyyy-MM-dd'."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N MoodLog)"
+        },
+        "mood": {
+          "type": "string",
+          "description": "The mood selected by the user (e.g., Happy, Sad, Anxious)."
+        },
+        "intensity": {
+          "type": "number",
+          "description": "The intensity of the mood on a scale (e.g., 1-10)."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Additional notes about the mood."
+        },
+        "date": {
+          "type": "string",
+          "description": "The date of the log in 'yyyy-MM-dd' format."
+        },
+        "loggedAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the mood was logged.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "mood",
+        "intensity",
+        "date",
+        "loggedAt"
+      ]
+    },
+    "SleepLog": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SleepLog",
+      "type": "object",
+      "description": "Represents a user's sleep log entry.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the SleepLog entity, typically the date string 'yyyy-MM-dd'."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N SleepLog)"
+        },
+        "duration": {
+          "type": "number",
+          "description": "Sleep duration in hours."
+        },
+        "quality": {
+          "type": "string",
+          "description": "Qualitative assessment of sleep quality (e.g., Good, Fair, Poor)."
+        },
+        "date": {
+          "type": "string",
+          "description": "The date of the log in 'yyyy-MM-dd' format."
+        },
+        "loggedAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the sleep was logged.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "duration",
+        "quality",
+        "date",
+        "loggedAt"
+      ]
+    },
+    "Medication": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Medication",
+      "type": "object",
+      "description": "Represents a medication the user needs to take.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Medication entity."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N Medication)"
+        },
+        "medicationName": {
+          "type": "string",
+          "description": "Name of the medication."
+        },
+        "dosage": {
+          "type": "string",
+          "description": "Dosage of the medication."
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "medicationName",
+        "dosage"
+      ]
+    },
+    "MedicationLog": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "MedicationLog",
+      "type": "object",
+      "description": "Represents a log entry for a medication that was taken.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the MedicationLog entity."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N MedicationLog)"
+        },
+        "medicationId": {
+          "type": "string",
+          "description": "Reference to the Medication entity that was taken."
+        },
+        "medicationName": {
+          "type": "string",
+          "description": "Name of the medication (denormalized for easier display)."
+        },
+        "dosage": {
+          "type": "string",
+          "description": "Dosage of the medication (denormalized)."
+        },
+        "takenAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the medication was taken.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "medicationId",
+        "medicationName",
+        "dosage",
+        "takenAt"
+      ]
+    },
+    "WaterIntakeLog": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "WaterIntakeLog",
+      "type": "object",
+      "description": "Represents a user's water intake log entry.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the WaterIntakeLog entity."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N WaterIntakeLog)"
+        },
+        "amount": {
+          "type": "number",
+          "description": "Amount of water consumed (e.g., in ounces or milliliters)."
+        },
+        "loggedAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the water intake was logged.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "amount",
+        "loggedAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Stores user profile information, including goals. This path is secured by user ownership, meaning a user can only access their own document."
+        }
+      },
+      {
+        "path": "/users/{userId}/moodLogs/{moodLogId}",
+        "definition": {
+          "entityName": "MoodLog",
+          "schema": {
+            "$ref": "#/backend/entities/MoodLog"
+          },
+          "description": "Stores mood log entries for each user. This collection is secured by user ownership, where the {userId} in the path must match the authenticated user's ID."
+        }
+      },
+      {
+        "path": "/users/{userId}/sleepLogs/{sleepLogId}",
+        "definition": {
+          "entityName": "SleepLog",
+          "schema": {
+            "$ref": "#/backend/entities/SleepLog"
+          },
+          "description": "Stores sleep log entries for each user. This collection is secured by user ownership, where the {userId} in the path must match the authenticated user's ID."
+        }
+      },
+      {
+        "path": "/users/{userId}/medications",
+        "definition": {
+          "entityName": "Medication",
+          "schema": {
+            "$ref": "#/backend/entities/Medication"
+          },
+          "description": "Stores the list of medications a user is prescribed. This collection is secured by user ownership, meaning only the authenticated user can read or write their own medications."
+        }
+      },
+      {
+        "path": "/users/{userId}/medicationLogs/{medicationLogId}",
+        "definition": {
+          "entityName": "MedicationLog",
+          "schema": {
+            "$ref": "#/backend/entities/MedicationLog"
+          },
+          "description": "Stores a log entry for each time a medication is taken. This collection is secured by user ownership, where the {userId} in the path must match the authenticated user's ID."
+        }
+      },
+      {
+        "path": "/users/{userId}/waterIntakeLogs/{waterIntakeLogId}",
+        "definition": {
+          "entityName": "WaterIntakeLog",
+          "schema": {
+            "$ref": "#/backend/entities/WaterIntakeLog"
+          },
+          "description": "Stores water intake log entries for each user. This collection is secured by user ownership, where the {userId} in the path must match the authenticated user's ID."
+        }
+      }
+    ],
+    "reasoning": "The structure separates static medication definitions (/medications) from time-series log data (/medicationLogs), which is more efficient for querying. User goals are stored on the UserProfile. All other collections are time-series data owned by the user and secured by path-based ownership rules."
+  }
+}

@@ -1,0 +1,195 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Secure user profile data. Only the owner can read and write their own profile.
+     * @path /users/{userId}
+     * @allow (create) User with ID 'user123' can create their profile.
+     *   Request: { "auth": { "uid": "user123" }, "resource": { "data": { "id": "user123", "username": "testuser", "email": "test@example.com", "createdAt": "...", "updatedAt": "..." } } }
+     * @allow (get, update, delete) User with ID 'user123' can get, update, and delete their profile.
+     *   Request: { "auth": { "uid": "user123" } }
+     * @deny (create) User with ID 'user456' cannot create a profile for user 'user123'.
+     *   Request: { "auth": { "uid": "user456" }, "resource": { "data": { "id": "user123", "username": "testuser", "email": "test@example.com", "createdAt": "...", "updatedAt": "..." } } }
+     * @deny (get, update, delete) User with ID 'user456' cannot get, update, or delete user 'user123's profile.
+     *   Request: { "auth": { "uid": "user456" } }
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId} {
+      // Helpers
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if false;
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == request.auth.uid;
+      allow update: if isSignedIn() && isOwner(userId);
+      allow delete: if isSignedIn() && isOwner(userId);
+    }
+
+    /**
+     * @description Secure mood log entries for each user. Only the owner can read and write their own mood logs.
+     * @path /users/{userId}/moodLogs/{moodLogId}
+     * @allow (create) User with ID 'user123' can create a mood log entry under their profile.
+     *   Request: { "auth": { "uid": "user123" }, "resource": { "data": { "userProfileId": "user123", "mood": "Happy", "intensity": 5, "date": "2024-01-01", "loggedAt": "..." } } }
+     * @allow (get, update, delete) User with ID 'user123' can get, update, and delete their mood log entry.
+     *   Request: { "auth": { "uid": "user123" } }
+     * @allow (list) User with ID 'user123' can list their own mood log entries.
+     *   Request: { "auth": { "uid": "user123" } }
+     * @deny (create) User with ID 'user456' cannot create a mood log entry for user 'user123'.
+     *   Request: { "auth": { "uid": "user456" }, "resource": { "data": { "userProfileId": "user123", "mood": "Happy", "intensity": 5, "date": "2024-01-01", "loggedAt": "..." } } }
+     * @deny (get, update, delete) User with ID 'user456' cannot get, update, or delete user 'user123's mood log entry.
+     *   Request: { "auth": { "uid": "user456" } }
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/moodLogs/{moodLogId} {
+      // Helpers
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if isSignedIn() && isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isOwner(userId);
+      allow delete: if isSignedIn() && isOwner(userId);
+    }
+
+    /**
+     * @description Secure sleep log entries for each user. Only the owner can read and write their own sleep logs.
+     * @path /users/{userId}/sleepLogs/{sleepLogId}
+     * @allow (create) User with ID 'user123' can create a sleep log entry under their profile.
+     *   Request: { "auth": { "uid": "user123" }, "resource": { "data": { "userProfileId": "user123", "duration": 8, "quality": "Good", "date": "2024-01-01", "loggedAt": "..." } } }
+     * @allow (get, update, delete) User with ID 'user123' can get, update, and delete their sleep log entry.
+     *   Request: { "auth": { "uid": "user123" } }
+     * @allow (list) User with ID 'user123' can list their own sleep log entries.
+     *   Request: { "auth": { "uid": "user123" } }
+     * @deny (create) User with ID 'user456' cannot create a sleep log entry for user 'user123'.
+     *   Request: { "auth": { "uid": "user456" }, "resource": { "data": { "userProfileId": "user123", "duration": 8, "quality": "Good", "date": "2024-01-01", "loggedAt": "..." } } }
+     * @deny (get, update, delete) User with ID 'user456' cannot get, update, or delete user 'user123's sleep log entry.
+     *   Request: { "auth": { "uid": "user456" } }
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/sleepLogs/{sleepLogId} {
+      // Helpers
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if isSignedIn() && isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isOwner(userId);
+      allow delete: if isSignedIn() && isOwner(userId);
+    }
+
+    /**
+     * @description Secure medication information for each user. Only the owner can read and write their own medications.
+     * @path /users/{userId}/medications/{document}
+     * @allow (create) User with ID 'user123' can create a medication under their profile.
+     *   Request: { "auth": { "uid": "user123" }, "resource": { "data": { "userProfileId": "user123", "medicationName": "Synthroid", "dosage": "100mcg" } } }
+     * @allow (get, update, delete) User with ID 'user123' can get, update, and delete their medication.
+     *   Request: { "auth": { "uid": "user123" } }
+     * @allow (list) User with ID 'user123' can list their own medications.
+     *   Request: { "auth": { "uid": "user123" } }
+     * @deny (create) User with ID 'user456' cannot create a medication for user 'user123'.
+     *   Request: { "auth": { "uid": "user456" }, "resource": { "data": { "userProfileId": "user123", "medicationName": "Synthroid", "dosage": "100mcg" } } }
+     * @deny (get, update, delete) User with ID 'user456' cannot get, update, or delete user 'user123's medication.
+     *   Request: { "auth": { "uid": "user456" } }
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/medications/{document} {
+      // Helpers
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if isSignedIn() && isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isOwner(userId);
+      allow delete: if isSignedIn() && isOwner(userId);
+    }
+
+    /**
+     * @description Secure medication log entries for each user. Only the owner can read and write their own medication logs.
+     * @path /users/{userId}/medicationLogs/{medicationLogId}
+     * @allow (create) User with ID 'user123' can create a medication log entry under their profile.
+     *   Request: { "auth": { "uid": "user123" }, "resource": { "data": { "userProfileId": "user123", "medicationId": "med123", "medicationName": "Synthroid", "dosage": "100mcg", "takenAt": "..." } } }
+     * @allow (get, update, delete) User with ID 'user123' can get, update, and delete their medication log entry.
+     *   Request: { "auth": { "uid": "user123" } }
+     * @allow (list) User with ID 'user123' can list their own medication log entries.
+     *   Request: { "auth": { "uid": "user123" } }
+     * @deny (create) User with ID 'user456' cannot create a medication log entry for user 'user123'.
+     *   Request: { "auth": { "uid": "user456" }, "resource": { "data": { "userProfileId": "user123", "medicationId": "med123", "medicationName": "Synthroid", "dosage": "100mcg", "takenAt": "..." } } }
+     * @deny (get, update, delete) User with ID 'user456' cannot get, update, or delete user 'user123's medication log entry.
+     *   Request: { "auth": { "uid": "user456" } }
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/medicationLogs/{medicationLogId} {
+      // Helpers
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if isSignedIn() && isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isOwner(userId);
+      allow delete: if isSignedIn() && isOwner(userId);
+    }
+
+    /**
+     * @description Secure water intake log entries for each user. Only the owner can read and write their own water intake logs.
+     * @path /users/{userId}/waterIntakeLogs/{waterIntakeLogId}
+     * @allow (create) User with ID 'user123' can create a water intake log entry under their profile.
+     *   Request: { "auth": { "uid": "user123" }, "resource": { "data": { "userProfileId": "user123", "amount": 8, "loggedAt": "..." } } }
+     * @allow (get, update, delete) User with ID 'user123' can get, update, and delete their water intake log entry.
+     *   Request: { "auth": { "uid": "user123" } }
+     * @allow (list) User with ID 'user123' can list their own water intake log entries.
+     *   Request: { "auth": { "uid": "user123" } }
+     * @deny (create) User with ID 'user456' cannot create a water intake log entry for user 'user123'.
+     *   Request: { "auth": { "uid": "user456" }, "resource": { "data": { "userProfileId": "user123", "amount": 8, "loggedAt": "..." } } }
+     * @deny (get, update, delete) User with ID 'user456' cannot get, update, or delete user 'user123's water intake log entry.
+     *   Request: { "auth": { "uid": "user456" } }
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/waterIntakeLogs/{waterIntakeLogId} {
+      // Helpers
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if isSignedIn() && isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isOwner(userId);
+      allow delete: if isSignedIn() && isOwner(userId);
+    }
+  }
+}
